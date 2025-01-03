@@ -19,16 +19,20 @@ const int gridSize = 3;
 class Game {
 private:
   GameMoves grid[3][3];
+  string status;
 
 public:
   Game()
-      : grid{{GameMoves::B, GameMoves::X, GameMoves::B},
+      : grid{{GameMoves::B, GameMoves::B, GameMoves::B},
              {GameMoves::B, GameMoves::B, GameMoves::B},
-             {GameMoves::B, GameMoves::B, GameMoves::B}} {};
+             {GameMoves::B, GameMoves::B, GameMoves::B}} {
+    status = "live";
+  };
   GameMoves *getBoard() { return *this->grid; };
   void markMove(GameMoves m, string cell);
+  string getStatus() { return this->status; };
   bool checkValidMove(string cell);
-  void displayGrid(int gridSize);
+  void displayGrid();
   vector<string> getEmptyCells();
 };
 // Return a list of all empty cells in the grid
@@ -41,9 +45,6 @@ vector<string> Game::getEmptyCells() {
       };
     }
   };
-  for (string x : emptyCells) {
-    cout << x << " - ";
-  }
   return emptyCells;
 };
 
@@ -72,7 +73,7 @@ bool Game::checkValidMove(string cell) {
 
 // Take input from the user and mark the move on the board
 void Game::markMove(GameMoves m, string cell) {
-
+  grid[stoi(cell.substr(0, 1))][stoi(cell.substr(1, 1))] = m;
 };
 
 // Overload the << operator to display the enum values
@@ -99,7 +100,8 @@ private:
   GameMoves selection;
 
 public:
-  Player(GameMoves userSelection, string name) {
+  Player() {};
+  void initializePlayer(GameMoves userSelection, string name) {
     this->selection = userSelection;
     this->playerName = name;
   };
@@ -107,10 +109,12 @@ public:
     cout << playerName << endl;
     cout << selection << endl;
   };
+  string getPlayerName() { return this->playerName; }
+  GameMoves getPlayerSelection() { return this->selection; }
 };
 
 // TODO:  Need to do beautification of the terminal display
-void Game::displayGrid(int gridSize) {
+void Game::displayGrid() {
   // displaying the first line of grid
   for (int i = 0; i < gridSize; i++)
     cout << "----";
@@ -137,20 +141,67 @@ void Game::displayGrid(int gridSize) {
   }
 }
 
-int main() {
+vector<Player> createPlayers(int numberOfPlayers) {
+  string playerName;
+  string playerSelection;
+  vector<Player> players;
+  for (int i = 0; i < numberOfPlayers; i++) {
+    players.push_back(Player());
+  }
+  for (int i = 0; i < numberOfPlayers; i++) {
+    cout << "Enter Player" << i + 1 << " name : ";
+    cin >> playerName;
+    cout << "Which Symbol do you want to play with X or O ? : ";
+    cin >> playerSelection;
+    players[i].initializePlayer(
+        playerSelection == "X" ? GameMoves::X : GameMoves::O, playerName);
+  }
+  return players;
+};
+
+// Configure game
+Game initializeGame() {
   Game g;
-  g.displayGrid(3);
-  Player p1(GameMoves::X, "Alankar");
-  p1.displayUserInfo();
-  string cell;
-  cout << "Enter your cell number from the above grid : ";
-  cin >> cell;
-  bool isValidCell = g.checkValidMove(cell);
-  if (!isValidCell) {
-    cout << "Invalid cell number entered" << endl;
-  } else {
-    // mark the move
-  };
+  return g;
+}
+
+void initiateGame() {
+  Game game = initializeGame();
+  int MAX_MOVES = 9;
+  int moveCounter = 0;
+  vector<Player> players = createPlayers(2);
+  while (game.getStatus() != "over" && moveCounter < MAX_MOVES) {
+    for (int i = 0; i < players.size(); i++) {
+      moveCounter++;
+      string userInputCell;
+      game.displayGrid();
+      cout << players[i].getPlayerName() << "\'s "
+           << "turn....Please enter the cell number in which you want to play";
+      cin >> userInputCell;
+      game.markMove(players[i].getPlayerSelection(), userInputCell);
+      game.displayGrid();
+      cout << "............Move successfully marked............" << endl;
+      cout << "\033[2J\033[H";
+    }
+  }
+}
+
+int main() {
+  initiateGame();
+  // Game g;
+  // g.displayGrid();
+  // string cell;
+  // cout << "Enter your cell number from the above grid : ";
+  // cin >> cell;
+  // bool isValidCell = g.checkValidMove(cell);
+  // if (!isValidCell) {
+  //   cout << "Invalid cell number entered" << endl;
+  // } else {
+  //   cout << "Marking move ...." << endl;
+  //   g.markMove(GameMoves::X, cell);
+  //   g.displayGrid();
+  // };
+
   /*cout <<  *(g.getBoard() + 1)<< endl;*/
   return 0;
 };
