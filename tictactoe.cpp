@@ -31,9 +31,11 @@ public:
   GameMoves *getBoard() { return *this->grid; };
   void markMove(GameMoves m, string cell);
   string getStatus() { return this->status; };
+  void setStatus(string status) { this->status = status; }
   bool checkValidMove(string cell);
   void displayGrid();
   vector<string> getEmptyCells();
+  bool checkForResult();
 };
 // Return a list of all empty cells in the grid
 vector<string> Game::getEmptyCells() {
@@ -47,6 +49,37 @@ vector<string> Game::getEmptyCells() {
   };
   return emptyCells;
 };
+
+bool Game::checkForResult() {
+  bool isGameWon = false;
+  // row travesal
+  for (int i = 0; i < gridSize; i++) {
+    if (grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2] &&
+        grid[i][0] != GameMoves::B && grid[i][1] != GameMoves::B &&
+        grid[i][2] != GameMoves::B)
+      return true;
+  }
+
+  // column traversal
+  for (int j = 0; j < gridSize; j++) {
+    if (grid[0][j] == grid[1][j] && grid[1][j] == grid[2][j] &&
+        grid[0][j] != GameMoves::B && grid[1][j] != GameMoves::B &&
+        grid[2][j] != GameMoves::B)
+      return true;
+  }
+
+  // diagonal traversal
+  if (grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2] &&
+      grid[0][0] != GameMoves::B && grid[1][1] != GameMoves::B &&
+      grid[2][2] != GameMoves::B)
+    return true;
+  if (grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0] &&
+      grid[0][2] != GameMoves::B && grid[1][1] != GameMoves::B &&
+      grid[2][0] != GameMoves::B)
+    return true;
+
+  return isGameWon;
+}
 
 // Check if the cell value entered by the user is  a valid cell on the grid
 bool Game::checkValidMove(string cell) {
@@ -176,32 +209,27 @@ void initiateGame() {
       string userInputCell;
       game.displayGrid();
       cout << players[i].getPlayerName() << "\'s "
-           << "turn....Please enter the cell number in which you want to play";
+           << "turn....Please enter the cell number in which you want to play "
+              ": ----->>> ";
       cin >> userInputCell;
       game.markMove(players[i].getPlayerSelection(), userInputCell);
       game.displayGrid();
       cout << "............Move successfully marked............" << endl;
       cout << "\033[2J\033[H";
+      bool checkResult = game.checkForResult();
+      if (checkResult) {
+        cout << "Congratulations " << players[i].getPlayerName()
+             << " you have won the game" << endl;
+        game.displayGrid();
+        game.setStatus("over");
+        break;
+      }
     }
   }
 }
 
 int main() {
   initiateGame();
-  // Game g;
-  // g.displayGrid();
-  // string cell;
-  // cout << "Enter your cell number from the above grid : ";
-  // cin >> cell;
-  // bool isValidCell = g.checkValidMove(cell);
-  // if (!isValidCell) {
-  //   cout << "Invalid cell number entered" << endl;
-  // } else {
-  //   cout << "Marking move ...." << endl;
-  //   g.markMove(GameMoves::X, cell);
-  //   g.displayGrid();
-  // };
-
   /*cout <<  *(g.getBoard() + 1)<< endl;*/
   return 0;
 };
