@@ -26,6 +26,7 @@ public:
   void displayGrid();
   vector<string> getEmptyCells();
   bool checkForResult();
+  bool isGameOver();
 };
 // Return a list of all empty cells in the grid
 vector<string> Game::getEmptyCells() {
@@ -69,6 +70,21 @@ bool Game::checkForResult() {
     return true;
 
   return isGameWon;
+}
+
+bool Game::isGameOver() {
+  bool isGameOver = false;
+  for (int i = 0; i < gridSize; i++) {
+    for (int j = 0; j < gridSize; j++) {
+      if (grid[i][j] == GameMoves::B) {
+        isGameOver = false;
+        break;
+      } else {
+        isGameOver = true;
+      }
+    }
+  }
+  return isGameOver;
 }
 
 // Check if the cell value entered by the user is  a valid cell on the grid
@@ -207,6 +223,10 @@ void initiateGame() {
       cout << "............Move successfully marked............" << endl;
       cout << "\033[2J\033[H";
       bool checkResult = game.checkForResult();
+
+      if (!checkResult) {
+        bool isGameOver = game.isGameOver();
+      };
       if (checkResult) {
         cout << "Congratulations " << players[i].getPlayerName()
              << " you have won the game" << endl;
