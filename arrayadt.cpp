@@ -4,7 +4,7 @@
 using namespace std;
 
 struct Array {
-  int A[20];
+  int A[50];
   int size;
   int length;
 };
@@ -144,15 +144,74 @@ void reverseArrayInPlace(struct Array *arr) {
   }
 }
 
-// Left Shift
+// Left Shift by one position
 
-// Right Shift
+// Left Shift by k positions
 
-// Rotation
+// Right Shift by one position
 
-// Left Rotation
+// Right Shift by k positions
 
-// Right Rotation
+// Left Rotation by k positions
+
+// Right Rotation by k positions
+
+// Bitwise operations for binary arrays shifting
+
+// Bitwise operations for binary array rottation
+
+// Rotation using Juggling Algorithm
+
+// Inserting in a sorted array
+void insertInSortedArray(struct Array *arr, int key) {
+  arr->length++;
+  for (int i = arr->length - 1; i >= 0; i--) {
+    cout << arr->A[i] << " " << i << " " << key << endl;
+    if (key >= arr->A[i - 1]) {
+      arr->A[i] = key;
+      break;
+    } else {
+      arr->A[i] = arr->A[i - 1];
+    }
+  }
+}
+
+// Checking if the array is s rted
+
+// Arranging -ve values on left side
+
+// Merging two arrays
+struct Array mergeSortedArrays(struct Array arr1, struct Array arr2) {
+  struct Array arr3 = {{0}, arr1.size + arr2.size, arr1.length + arr2.length};
+  int i = 0, j = 0, k = 0;
+  while (i < arr1.length && j < arr2.length) {
+    if (arr1.A[i] < arr2.A[j]) {
+      arr3.A[k++] = arr1.A[i++];
+    } else {
+      arr3.A[k++] = arr2.A[j++];
+    }
+  }
+
+  for (; i < arr1.length; i++) {
+    arr3.A[k++] = arr1.A[i];
+  }
+
+  for (; j < arr2.length; j++) {
+    arr3.A[k++] = arr2.A[j];
+  }
+
+  return arr3;
+}
+
+// Set Operations
+
+// Unions n^2 for unsorted & n for sorted
+
+// Intersection n^2 for unsorted & n for sorted
+
+// Difference
+
+// Set Membership
 
 int main() {
   cout << "ARRAY ADT" << endl;
@@ -181,8 +240,14 @@ int main() {
   binarySearch(1, arr);
   cout << "Recursive Search "
        << recursiveBinarySearch(1, 0, arr.length - 1, arr) << endl;
+  // reverseArrayInPlace(&arr);
+  insertInSortedArray(&arr, 0);
   displayArray(arr);
-  reverseArrayInPlace(&arr);
-  displayArray(arr);
+  struct Array arr1 = {{10, 30, 50, 70}, 10, 4};
+  struct Array arr2 = {{20, 40, 60, 80, 100}, 10, 5};
+
+  struct Array arr3 = mergeSortedArrays(arr1, arr2);
+  cout << "merged array" << endl;
+  displayArray(arr3);
   return 0;
 }
